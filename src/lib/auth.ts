@@ -1,9 +1,22 @@
 'use server';
 
-import { revalidatePath } from 'next/cache';
-import { redirect } from 'next/navigation';
-
 import createSupabaseServerClient from '@/lib/supabase/server';
+import { redirect } from 'next/navigation';
+import { getUser } from './supabase/queries';
+
+export async function readUserSessionServer() {
+  const supabase = await createSupabaseServerClient();
+
+  return getUser(supabase);
+}
+
+export async function logout() {
+  const supabase = await createSupabaseServerClient();
+
+  await supabase.auth.signOut();
+
+  redirect('/auth/signin');
+}
 
 /**
  * Logs in the user using email and password
@@ -22,17 +35,23 @@ export async function login({
     password,
   };
 
-  const { error } = await supabase.auth.signInWithPassword(data);
+  const { data: authData, error } = await supabase.auth.signInWithPassword(
+    data
+  );
 
   if (error) {
     return {
       success: false,
       message: error.message,
+      data: null,
     };
   }
 
-  revalidatePath('/');
-  redirect('/');
+  return {
+    success: true,
+    message: 'Logged In',
+    data: authData,
+  };
 }
 
 /**
@@ -57,33 +76,19 @@ export async function signup({
     },
   };
 
-  const { error } = await supabase.auth.signUp(data);
+  const { data: authData, error } = await supabase.auth.signUp(data);
 
   if (error) {
     return {
       success: false,
       message: error.message,
+      data: null,
     };
   }
 
-  revalidatePath('/');
-  redirect('/');
-}
-
-/**
- * Logs out the user
- */
-export async function logout() {
-  const supabase = await createSupabaseServerClient();
-
-  const { error } = await supabase.auth.signOut();
-
-  if (error) {
-    return {
-      success: false,
-      message: error.message,
-    };
-  }
-
-  redirect('/login');
+  return {
+    success: true,
+    message: 'Signed up',
+    data: authData,
+  };
 }
