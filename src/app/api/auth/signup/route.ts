@@ -10,27 +10,16 @@ const signupRouteHandler = async (request: Request) => {
     throw new BadRequestError('Email and password are required');
   }
 
-  const { success, message, data } = await signup({ name, email, password });
+  const { success, message } = await signup({ name, email, password });
 
   if (!success) {
     throw new InternalError(message);
   }
 
-  const accessToken = data?.session?.access_token;
-  const refreshToken = data?.session?.refresh_token;
-
-  if (!accessToken || !refreshToken) {
-    throw new BadRequestError('Invalid access token or refresh token');
-  }
-
   return NextResponse.json({
     success: true,
     message,
-    data: {
-      user: data.user,
-      accessToken,
-      refreshToken,
-    },
+    data: null,
   });
 };
 
