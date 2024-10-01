@@ -2,6 +2,8 @@ import { routeHandler } from '@/lib/routeHandler';
 import createSupabaseServerClient from '@/lib/supabase/server';
 import { NextResponse } from 'next/server';
 
+export const dynamic = 'force-dynamic';
+
 const getTemplatesHander = async () => {
   const supabase = await createSupabaseServerClient();
 
