@@ -28,3 +28,9 @@ export class NotFoundError extends HttpError {
     super(message, 404);
   }
 }
+
+export class InternalError extends HttpError {
+  constructor(message = 'Internal server error') {
+    super(message, 500);
+  }
+}

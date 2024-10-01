@@ -35,14 +35,23 @@ export async function login({
     password,
   };
 
-  const { error } = await supabase.auth.signInWithPassword(data);
+  const { data: authData, error } = await supabase.auth.signInWithPassword(
+    data
+  );
 
   if (error) {
     return {
       success: false,
       message: error.message,
+      data: null,
     };
   }
+
+  return {
+    success: true,
+    message: 'Logged In',
+    data: authData,
+  };
 }
 
 /**
@@ -67,12 +76,19 @@ export async function signup({
     },
   };
 
-  const { error } = await supabase.auth.signUp(data);
+  const { data: authData, error } = await supabase.auth.signUp(data);
 
   if (error) {
     return {
       success: false,
       message: error.message,
+      data: null,
     };
   }
+
+  return {
+    success: true,
+    message: 'Signed up',
+    data: authData,
+  };
 }
